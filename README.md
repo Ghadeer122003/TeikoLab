@@ -34,7 +34,41 @@ TeikoLab/
 
 ## How to Run
 
-...
+### Option 1: Run locally
+
+Clone the repo and run the following three commands in order:
+
+```bash
+make setup
+```
+Installs all dependencies from requirements.txt.
+
+```bash
+make pipeline
+```
+Loads the data, initializes the database, runs the frequency analysis, statistical analysis, and subset queries. All output files are generated automatically.
+
+```bash
+make dashboard
+```
+Starts the Streamlit dashboard locally. Open your browser and go to `http://localhost:8501`
+
+> Tested on Python 3.13. Designed to run in GitHub Codespaces or any Mac/Linux environment.
+
+---
+
+### Option 2: Run with Docker
+
+> Make sure Docker Desktop is installed and running before executing these commands.
+
+```bash
+docker build -t teikolab .
+docker run -p 8501:8501 teikolab
+```
+
+Open your browser and go to `http://localhost:8501`
+
+> No need to install Python or any dependencies manually, Docker handles everything :D
 
 ## Schema
 
