@@ -7,7 +7,7 @@
 
 Built for Bob Loblaw at Loblaw Bio to analyze immune cell data from an ongoing clinical trial for his drug candidate miraclib.
 
-![Dashboard Screenshot](screenshot.png)
+![Dashboard Screenshot](dashboard.png)
 
 ## Overview
 
