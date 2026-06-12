@@ -7,6 +7,8 @@
 
 Built for Bob Loblaw at Loblaw Bio to analyze immune cell data from an ongoing clinical trial for his drug candidate miraclib.
 
+![Dashboard Screenshot](screenshot.png)
+
 ## Overview
 
 Bob Loblaw is a drug developer at Loblaw Bio running a clinical trial for his drug candidate miraclib on melanoma patients. He needed a way to analyze how the drug affects immune cell populations across patients who respond to treatment versus those who don't.
@@ -72,11 +74,42 @@ Open your browser and go to `http://localhost:8501`
 
 ## Schema
 
-...
+The data is split into two tables: `subjects` and `samples`.
+
+`subjects` stores everything about the patient that stays the same across visits such as project, condition, age, sex, treatment, and response. Each patient has one row.
+
+`samples` stores the actual cell counts per visit such as sample ID, sample type, timepoint, and the five cell population counts. Each sample links back to its patient via a foreign key on `subject`.
+
+The reason for splitting them is to avoid repeating patient info on every row. A patient has 3 samples (timepoints 0, 7, 14), so without the split you'd store their age, sex, condition, and treatment 3 times per patient. With the split, that info lives once in `subjects` and the samples just reference it.
+
+**How it scales:**
+
+If you had hundreds of projects and thousands of samples, this design holds up well. Adding a new project is just new rows, not new tables. If you wanted to add new analytics like tracking additional cell populations or new metadata fields, you'd just add columns. For very large datasets you'd add indexes on commonly queried columns like `condition`, `treatment`, and `time_from_treatment_start` to keep queries fast.
 
 ## Dashboard
 
-...
+The dashboard is built with Streamlit and connects directly to the SQLite database. It has three pages:
+
+**Immune Changes** shows the boxplot comparing responders vs non-responders across all five cell populations. The chart is interactive, you can zoom, pan, and hover to see exact values. cd4_t_cell is the only statistically significant population (p = 0.0133).
+
+**Frequency Summary** shows a filterable table of relative cell population frequencies. Bob can filter by condition, treatment, and timepoint and the table updates live.
+
+**Subset Analysis** shows baseline stats for melanoma miraclib PBMC patients at time=0, samples per project, responders vs non-responders, males vs females, and average B cell count. There is also a custom query section where Bob can select any cell population, sex, and timepoint and get the average count back instantly.
+
+To launch the dashboard run `make dashboard` or with Docker run `docker run -p 8501:8501 teikolab`. Then open `http://localhost:8501`.
+
+## Code Structure
+
+The project is split into four separate scripts that each handle one part of the pipeline, plus the dashboard.
+
+`load_data.py` runs first and only needs to run once. It sets up the database and loads the CSV. Keeping it separate means you don't reload the data every time you run the analysis.
+
+`summary.py` handles the frequency calculations. `stat_analysis.py` handles the statistics and boxplot. `subset.py` handles the subset queries. Each file does one thing cleanly.
+
+`dashboard.py` is the only file that uses Streamlit. It reads directly from the database and does not depend on the other scripts being imported, which keeps it simple and fast to reload during development.
+
+This separation makes it easy to debug, test, and extend. If Bob wants a new analysis added, you just add a new script and a line to the Makefile.
+
 ## References
 
 - Mann, H.B. & Whitney, D.R. (1947). On a Test of Whether One of Two Random Variables is Stochastically Larger than the Other. *Annals of Mathematical Statistics*, 18(1), 50–60.
