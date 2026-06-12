@@ -43,3 +43,7 @@ TeikoLab/
 ## Dashboard
 
 ...
+## References
+
+- Mann, H.B. & Whitney, D.R. (1947). On a Test of Whether One of Two Random Variables is Stochastically Larger than the Other. *Annals of Mathematical Statistics*, 18(1), 50–60.
+- Tumeh et al. (2014). PD-1 blockade induces responses by inhibiting adaptive immune resistance. *Nature*, 515, 568–571.
